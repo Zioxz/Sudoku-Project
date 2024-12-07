@@ -85,7 +85,7 @@ def main():
 
     # Start game
     board = Board(603, 603, screen, difficulty)
-    print("asnwer",board.answer)
+    #print("asnwer",board.answer)
     screen.fill("white")  # Clear start screen before showing the board
     play_game(board, screen, ui, difficulty)
 
