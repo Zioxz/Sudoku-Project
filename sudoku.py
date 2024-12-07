@@ -1,6 +1,6 @@
 import pygame
 from sudoku_generator import *
-from board import Board
+from Board import Board
 
 
 class GameUI:
@@ -31,9 +31,21 @@ class GameUI:
         """Displays the end screen with a message."""
         self.screen.fill("white")
         text = self.font.render(message, True, "black")
-        self.screen.blit(text, (150, 250))
+        self.screen.blit(text, (150, 50))
+        #pygame.time.wait(3000)
+        if message == "You Win!":
+            end_btn = pygame.Rect(200, 150, 200, 50)
+            pygame.draw.rect(self.screen, "blue", end_btn)
+            text = self.font.render("Exit", True, "white")
+            self.screen.blit(text, (end_btn.x + 50, end_btn.y + 10))
+
+        else:
+            btn = pygame.Rect(200, 150, 200, 50)
+            pygame.draw.rect(self.screen, "blue", btn)
+            text = self.font.render("Restart", True, "white")
+            self.screen.blit(text, (btn.x + 50, btn.y + 10))
         pygame.display.update()
-        pygame.time.wait(3000)
+
 
     def draw_ui_buttons(self):
         """Draws the buttons below the board."""
@@ -53,7 +65,6 @@ def main():
     screen = pygame.display.set_mode((603, 700))  # Extra space for buttons
     pygame.display.set_caption("Sudoku Game")
     clock = pygame.time.Clock()
-
     ui = GameUI(screen)
     running = True
     difficulty = None
@@ -74,6 +85,7 @@ def main():
 
     # Start game
     board = Board(603, 603, screen, difficulty)
+    print("asnwer",board.answer)
     screen.fill("white")  # Clear start screen before showing the board
     play_game(board, screen, ui, difficulty)
 
@@ -107,26 +119,75 @@ def play_game(board, screen, ui, difficulty):
                 elif board.original_board[y // 67][x // 67] == 0:
                     board.select(x // 67, y // 67)
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_c and board.check_original(board.row,board.col):
+                    board.clear()
                 if event.key == pygame.K_s:
                     sketch = True
                 if pygame.K_1 <= event.key <= pygame.K_9:
                     num = event.key - pygame.K_0
-                    if sketch:
+                    if sketch and board.check_original(board.row,board.col):
                         board.sketch(num)
                         sketch = False
-                    else:
+                    elif board.check_original(board.row,board.col):
                         board.place_number(num)
-
+                if event.key == pygame.K_f:
+                    selection = board.find_empty()
+                    board.select(selection[0],selection[1])
+                if event.key == pygame.K_RIGHT:
+                    if board.row == 8:
+                        board.row = 0
+                    else:
+                        board.row += 1
+                    board.select(board.row,board.col)
+                if event.key == pygame.K_UP:
+                    if board.col == 0:
+                        board.col = 8
+                    else:
+                        board.col -= 1
+                    board.select(board.row, board.col)
+                if event.key == pygame.K_DOWN:
+                    if board.col == 8:
+                        board.col = 0
+                    else:
+                        board.col += 1
+                    board.select(board.row, board.col)
+                if event.key == pygame.K_LEFT:
+                    if board.row == 0:
+                        board.row = 8
+                    else:
+                        board.row -= 1
+                    board.select(board.row, board.col)
         if board.is_full():
             if board.check_board():
-                ui.draw_end_screen("You Win!")
+                #main()
+                #ui.draw_end_screen("You Win!")
+                end_screen("You Win!",screen,ui)
             else:
-                ui.draw_end_screen("Game Over!")
-            return
+                #main()
+                #ui.draw_end_screen("Game Over :(")
+                end_screen("Game Over :(", screen,ui)
+            #return
 
         pygame.display.update()
+
+def end_screen(message,screen,ui):
+    running = True
+    screen.fill("white")
+    ui.draw_end_screen(message)
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                btn = pygame.Rect(200, 150, 200, 50)
+                if btn.collidepoint(event.pos):
+                    if message == "You Win!":
+                        pygame.quit()
+                        running  = False
+                    else:
+                        main()
+                        running = False
+
 
 
 if __name__ == "__main__":
     main()
-
