@@ -11,6 +11,7 @@ class Board:
         self.row = 0
         self.col = 0
         self.difficulty_dict = {'easy': 30, 'medium': 40, 'hard': 50}
+        #
         self.user_sudoku = SudokuGenerator(self.difficulty_dict[difficulty])
         self.user_sudoku.fill_values()
         self.answer = [[],[],[],[],[],[],[],[],[]]
@@ -24,7 +25,7 @@ class Board:
                 self.original_board[i].append(self.user_sudoku.get_board()[i][j])
         self.user_board = self.user_sudoku.get_board()
     def draw(self):
-        for i in range(0, 9):
+        for i in range(0, 10):
             if i % 3 == 0:
                 pygame.draw.line(
                     self.screen,
@@ -40,7 +41,7 @@ class Board:
                     (603, i * 67),
                     4)
 
-        for i in range(0, 9):
+        for i in range(0, 10):
             if i % 3 == 0:
                 pygame.draw.line(
                     self.screen,
@@ -61,7 +62,7 @@ class Board:
                 if self.original_board[i][j] != 0:
                     self.row = j
                     self.col = i
-                    self.place_number(self.original_board[i][j])
+                    self.place_number(self.original_board[i][j],"org")
 
     def select(self, row, col):
         Board.draw(self)
@@ -80,13 +81,28 @@ class Board:
         pygame.draw.rect(self.screen, "white", (self.row * 67 + 10, self.col * 67 + 10, 12, 12))
         screen.blit(sketch_surf,sketch_rect)
 
-    def place_number(self, value):
-        num_font = pygame.font.Font(None, 60)
-        num_surf = num_font.render(str(value),10,"black")
-        num_rect = num_surf.get_rect(topleft = (self.row * 67 + 25,self.col * 67 +20))
-        pygame.draw.rect(self.screen, "white", (self.row * 67 + 25, self.col * 67 + 20, 30, 40))
-        screen.blit(num_surf,num_rect)
-        self.update_board(value)
+    def place_number(self, value,type = "player"):
+        if type == "player":
+            num_font = pygame.font.Font(None, 60)
+            num_surf = num_font.render(str(value),10,"black")
+            num_rect = num_surf.get_rect(topleft = (self.row * 67 + 25,self.col * 67 +20))
+            pygame.draw.rect(self.screen, "white", (self.row * 67 + 25, self.col * 67 + 20, 30, 40))
+            self.screen.blit(num_surf,num_rect)
+            self.update_board(value)
+        else:
+            num_font = pygame.font.Font(None, 60)
+            num_surf = num_font.render(str(value), 10, "red")
+            num_rect = num_surf.get_rect(topleft=(self.row * 67 + 25, self.col * 67 + 20))
+            pygame.draw.rect(self.screen, "white", (self.row * 67 + 25, self.col * 67 + 20, 30, 40))
+            self.screen.blit(num_surf, num_rect)
+            self.update_board(value)
+
+        #print("user",self.user_board)
+    def check_original(self,row,col):
+        if self.original_board[col][row] == 0:
+            return True
+        else:
+            return False
 
 
     def reset_to_original(self):
@@ -103,17 +119,30 @@ class Board:
     def update_board(self,value):
         self.user_board[self.col][self.row] = value
     def find_empty(self):
+        #if self.col == 0 or self.row == 0:
+        for i in range(self.col,9):
+            if self.user_board[0][0] == 0 and (self.col != i or self.row != 0):
+                return 0,0
+            for j in range(self.row,9):
+                if self.user_board[i][j] == 0 and (self.col != i or self.row != j):
+                    return j,i
+            self.row = 0
         for i in range(0,9):
             for j in range(0,9):
-                if self.user_board[i][j] == 0:
-                    return (i,j)
-        return False
+                print("check 2")
+                if self.user_board[i][j] == 0 and self.col != i and self.row != j:
+                    print(j,i)
+                    return j,i
+
+
+
     def check_board(self):
         for i in range(0,9):
             for j in range(0,9):
-                if self.user_board != self.answer[i][j]:
+                if self.user_board[i][j] != self.answer[i][j]:
                     return False
         return True
+'''
 pygame.init()
 sketch = False
 screen = pygame.display.set_mode((603,603))
@@ -204,6 +233,7 @@ while True:
                     myboard.place_number(9)
 
     pygame.display.update()
+'''
 #from sudoku_generator import *
 #import pygame
 
