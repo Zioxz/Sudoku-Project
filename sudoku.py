@@ -116,7 +116,9 @@ def play_game(board, screen, ui, difficulty):
                     elif 450 <= x <= 570 and 620 <= y <= 660:  # Exit button
                         pygame.quit()
                         return
-                elif board.original_board[y // 67][x // 67] == 0:
+                #elif board.original_board[y // 67][x // 67] == 0:
+                #    board.select(x // 67, y // 67)
+                else:
                     board.select(x // 67, y // 67)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_c and board.check_original(board.row,board.col):
