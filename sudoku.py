@@ -121,17 +121,23 @@ def play_game(board, screen, ui, difficulty):
                 else:
                     board.select(x // 67, y // 67)
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN and board.check_original(board.row,board.col) and board.sketch_list[board.col][board.row] != 0:
+                    board.place_number(board.sketch_list[board.col][board.row])
                 if event.key == pygame.K_c and board.check_original(board.row,board.col):
                     board.clear()
                 if event.key == pygame.K_s:
                     sketch = True
                 if pygame.K_1 <= event.key <= pygame.K_9:
                     num = event.key - pygame.K_0
+                    if board.check_original(board.row,board.col):
+                        board.sketch(num)
+                    '''
                     if sketch and board.check_original(board.row,board.col):
                         board.sketch(num)
                         sketch = False
                     elif board.check_original(board.row,board.col):
                         board.place_number(num)
+                    '''
                 if event.key == pygame.K_f:
                     selection = board.find_empty()
                     board.select(selection[0],selection[1])
