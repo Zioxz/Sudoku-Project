@@ -19,6 +19,10 @@ class Board:
             for j in range(0,9):
                 self.answer[i].append(self.user_sudoku.get_board()[i][j])
         self.user_sudoku.remove_cells()
+        self.sketch_list = [[], [], [], [], [], [], [], [], []]
+        for i in range(0, 9):
+            for j in range(0, 9):
+                self.sketch_list[i].append(self.user_sudoku.get_board()[i][j])
         self.original_board = [[],[],[],[],[],[],[],[],[]]
         for i in range(0,9):
             for j in range(0,9):
@@ -80,6 +84,7 @@ class Board:
         sketch_rect = sketch_surf.get_rect(topleft = (self.row * 67 + 10,self.col * 67 +10))
         pygame.draw.rect(self.screen, "white", (self.row * 67 + 10, self.col * 67 + 10, 12, 12))
         self.screen.blit(sketch_surf,sketch_rect)
+        self.sketch_list[self.col][self.row] = value
 
     def place_number(self, value,type = "player"):
         if type == "player":
@@ -130,7 +135,6 @@ class Board:
         for i in range(0,9):
             for j in range(0,9):
                 if self.user_board[i][j] == 0 and self.col != i and self.row != j:
-                    print(j,i)
                     return j,i
 
 
